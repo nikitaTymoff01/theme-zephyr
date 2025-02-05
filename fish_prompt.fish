@@ -28,8 +28,16 @@ function _is_git_dirty
 end
 
 function _git_branch_name
-    echo (command git symbolic-ref HEAD 2>/dev/null | sed -e 's|^refs/heads/||')
+    set branch (command git symbolic-ref --short HEAD 2>/dev/null)
+    if test -z "$branch"
+        set branch (command git describe --tags --exact-match 2>/dev/null)
+        if test -z "$branch"
+            set branch (command git rev-parse --short HEAD 2>/dev/null)
+        end
+    end
+    echo $branch
 end
+
 
 # node version getter
 function _get_node_version
